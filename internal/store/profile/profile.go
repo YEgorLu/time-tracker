@@ -8,7 +8,7 @@ import (
 )
 
 type ProfileStore interface {
-	GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, error)
+	GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) (profiles []models.Profile, count int, err error)
 	GetOne(ctx context.Context, passportSerie, passportNumber string) (models.Profile, error)
 	Delete(ctx context.Context, passportSerie, passportNumber string) error
 	Create(context.Context, models.Profile) (models.Profile, error)

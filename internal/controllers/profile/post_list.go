@@ -26,7 +26,7 @@ func (c *ProfileController) List(w http.ResponseWriter, r *http.Request) {
 	surnames := getNonEmptyStrings(body.Surname)
 	patronymics := getNonEmptyStrings(body.Patronymic)
 	addresses := getNonEmptyStrings(body.Patronymic)
-	profiles, err := c.ps.GetMany(r.Context(), body.Page, body.Size, serviceModels.ProfileFilter{
+	profiles, count, err := c.ps.GetMany(r.Context(), body.Page, body.Size, serviceModels.ProfileFilter{
 		Name:       names,
 		Surname:    surnames,
 		Patronymic: patronymics,
@@ -36,7 +36,11 @@ func (c *ProfileController) List(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if err := json.NewEncoder(w).Encode(profiles); err != nil {
+	response := models.ListProfileRes{
+		Data:       profiles,
+		TotalCount: count,
+	}
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

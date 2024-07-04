@@ -48,16 +48,16 @@ func initControllers() {
 		println(err.Error())
 	}
 	fmt.Println(smth)
-	smth2, err2 := profileStore.GetMany(context.Background(), 1, 10, models.ProfileFilter{
-		Name:       []string{"name1", "name2"},
-		Surname:    []string{"surname1", "surname2"},
-		Patronymic: []string{"patr1", "patr2"},
-		Address:    []string{"addr1", "addr2"},
+	smth2, count, err2 := profileStore.GetMany(context.Background(), 1, 2, models.ProfileFilter{
+		Name:       []string{"name1", "name2", "name3"},
+		Surname:    []string{"surname1", "surname2", "surname3"},
+		Patronymic: []string{"patr1", "patr2", "patr3"},
+		Address:    []string{"addr1", "addr2", "addr3"},
 	})
 	if err2 != nil {
 		fmt.Println(err2.Error())
 	}
-	fmt.Println(smth2)
+	fmt.Println(smth2, count)
 	peopleInfoService := peopleinfo.NewService(log)
 	profileService := profileService.NewService(profileStore, peopleInfoService, log)
 	controllers = []Controller{

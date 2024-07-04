@@ -49,12 +49,12 @@ func (p *localProfileService) Delete(ctx context.Context, passportSerie, passpor
 }
 
 // GetMany implements ProfileService.
-func (p *localProfileService) GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, error) {
-	dbProfiles, err := p.store.GetMany(ctx, page, size, converters.SvToDbProfileFilter(filter))
+func (p *localProfileService) GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, int, error) {
+	dbProfiles, count, err := p.store.GetMany(ctx, page, size, converters.SvToDbProfileFilter(filter))
 	if err != nil {
-		return []models.Profile{}, err
+		return []models.Profile{}, 0, err
 	}
-	return converters.DbToSvProfileSlice(dbProfiles), nil
+	return converters.DbToSvProfileSlice(dbProfiles), count, nil
 }
 
 // GetOne implements ProfileService.

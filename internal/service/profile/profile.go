@@ -11,7 +11,7 @@ import (
 
 type ProfileService interface {
 	GetOne(ctx context.Context, passportSerie, passportNumber string) (models.Profile, error)
-	GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, error)
+	GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) (profiles []models.Profile, count int, err error)
 	Delete(ctx context.Context, passportSerie, passportNumber string) error
 	Update(ctx context.Context, profile models.Profile) error
 	Create(ctx context.Context, passportSerie, passportNumber string) (models.Profile, error)

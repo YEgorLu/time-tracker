@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -68,66 +69,119 @@ func (p *pgProfileStore) Delete(ctx context.Context, passportSerie, passportNumb
 }
 
 // GetMany implements ProfileStore.
-func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, error) {
-	query := `SELECT pass_serie, pass_number, name, surname, patronymic, address
-	FROM public.profile
-	WHERE `
-	var searchParams []string
-	args := make([]any, 0, len(filter.Name)+len(filter.Surname)+len(filter.Patronymic)+len(filter.Address))
-	parameterTypes := [...]struct {
-		argName string
-		values  []string
-	}{
-		{"name", filter.Name},
-		{"surname", filter.Surname},
-		{"patronymic", filter.Patronymic},
-		{"address", filter.Address},
+func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, int, error) {
+	fmt.Println("page size ", page, size)
+	type queryResult[T any] struct {
+		result T
+		err    error
 	}
-
-	paramIndex := 0
-	for _, parameterType := range parameterTypes {
-		if len(parameterType.values) > 0 {
-			maskSl := make([]string, 0, len(parameterType.values))
-			for _, v := range parameterType.values {
-				paramIndex++
-				maskSl = append(maskSl, "$"+strconv.Itoa(paramIndex))
-				args = append(args, v)
-			}
-			searchParams = append(searchParams, parameterType.argName+` IN (`+strings.Join(maskSl, ", ")+`) `)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	countRowsCh := make(chan queryResult[int])
+	profilesCh := make(chan queryResult[[]models.Profile])
+	go func() {
+		count, err := p.countRows(ctx)
+		countRowsCh <- queryResult[int]{count, err}
+	}()
+	go func() {
+		query := []string{`SELECT pass_serie, pass_number, name, surname, patronymic, address
+			FROM public.profile
+			WHERE `}
+		var searchParams []string
+		args := make([]any, 0, len(filter.Name)+len(filter.Surname)+len(filter.Patronymic)+len(filter.Address))
+		parameterTypes := [...]struct {
+			argName string
+			values  []string
+		}{
+			{"name", filter.Name},
+			{"surname", filter.Surname},
+			{"patronymic", filter.Patronymic},
+			{"address", filter.Address},
 		}
-	}
-	query += strings.Join(searchParams, " AND ")
-	rows, err := p.conn.QueryContext(ctx, query, args...)
-	if err != nil {
-		return []models.Profile{}, err
-	}
-	defer rows.Close()
-	var profiles []models.Profile
-	for rows.Next() {
-		err := rows.Err()
+
+		paramIndex := 0
+		for _, parameterType := range parameterTypes {
+			if len(parameterType.values) > 0 {
+				maskSl := make([]string, 0, len(parameterType.values))
+				for _, v := range parameterType.values {
+					paramIndex++
+					maskSl = append(maskSl, "$"+strconv.Itoa(paramIndex))
+					args = append(args, v)
+				}
+				searchParams = append(searchParams, parameterType.argName+` IN (`+strings.Join(maskSl, ", ")+`) `)
+			}
+		}
+		query = append(query, strings.Join(searchParams, " AND "))
+		paramIndex++
+		limitIndex := paramIndex
+		args = append(args, size)
+		paramIndex++
+		offsetIndex := paramIndex
+		offset := (page - 1) * size
+		args = append(args, offset)
+		query = append(query, `LIMIT $`+strconv.Itoa(limitIndex)+` OFFSET $`+strconv.Itoa(offsetIndex))
+		fmt.Println(strings.Join(query, " "))
+		fmt.Println(args)
+		rows, err := p.conn.QueryContext(ctx, strings.Join(query, " "), args...)
 		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			} else {
-				return []models.Profile{}, err
+			profilesCh <- queryResult[[]models.Profile]{result: []models.Profile{}, err: err}
+			return
+		}
+		defer rows.Close()
+		var profiles []models.Profile
+		for rows.Next() {
+			err := rows.Err()
+			if err != nil {
+				if errors.Is(err, io.EOF) {
+					break
+				} else {
+					profilesCh <- queryResult[[]models.Profile]{result: []models.Profile{}, err: err}
+					return
+				}
 			}
+
+			var profile models.Profile
+			if err = rows.Scan(
+				&profile.PassportSerie,
+				&profile.PassportNumber,
+				&profile.Name,
+				&profile.Surname,
+				&profile.Patronymic,
+				&profile.Address,
+			); err != nil {
+				profilesCh <- queryResult[[]models.Profile]{result: []models.Profile{}, err: err}
+				return
+			}
+			profiles = append(profiles, profile)
 		}
 
-		var profile models.Profile
-		if err = rows.Scan(
-			&profile.PassportSerie,
-			&profile.PassportNumber,
-			&profile.Name,
-			&profile.Surname,
-			&profile.Patronymic,
-			&profile.Address,
-		); err != nil {
-			return []models.Profile{}, err
+		profilesCh <- queryResult[[]models.Profile]{result: profiles, err: nil}
+	}()
+
+	waitResutls := 2
+	var (
+		count    int
+		profiles []models.Profile
+	)
+	for waitResutls > 0 {
+		select {
+		case countRes := <-countRowsCh:
+			waitResutls--
+			if countRes.err != nil {
+				cancel()
+				return []models.Profile{}, 0, countRes.err
+			}
+			count = countRes.result
+		case profilesRes := <-profilesCh:
+			waitResutls--
+			if profilesRes.err != nil {
+				cancel()
+				return []models.Profile{}, 0, profilesRes.err
+			}
+			profiles = profilesRes.result
 		}
-		profiles = append(profiles, profile)
 	}
-
-	return profiles, nil
+	return profiles, count, nil
 }
 
 // GetOne implements ProfileStore.
@@ -168,4 +222,16 @@ func (p *pgProfileStore) Update(ctx context.Context, profile models.Profile) err
 		profile.Address,
 	)
 	return tx.Commit()
+}
+
+func (p *pgProfileStore) countRows(ctx context.Context) (int, error) {
+	row := p.conn.QueryRowContext(ctx, `SELECT COUNT(*) from public.profile;`)
+	if err := row.Err(); err != nil {
+		return 0, err
+	}
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
 }
