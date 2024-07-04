@@ -1,14 +1,18 @@
 package controllers
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/YEgorLu/time-tracker/internal/controllers/profile"
 	"github.com/YEgorLu/time-tracker/internal/db"
 	"github.com/YEgorLu/time-tracker/internal/logger"
+	peopleinfo "github.com/YEgorLu/time-tracker/internal/service/peopleInfo"
 	profileService "github.com/YEgorLu/time-tracker/internal/service/profile"
 	profileStore "github.com/YEgorLu/time-tracker/internal/store/profile"
+	"github.com/YEgorLu/time-tracker/internal/store/profile/models"
 )
 
 type Controller interface {
@@ -31,12 +35,31 @@ func GetRoutes() (*http.ServeMux, error) {
 
 func initControllers() {
 	log := logger.Get()
-	db, err := db.GetConnection()
-	if err != nil {
-		panic(err)
-	}
+	db := db.GetConnection(log)
 	profileStore := profileStore.NewStore(db)
-	profileService := profileService.NewService(profileStore)
+	smth, err := profileStore.Create(context.Background(), models.Profile{
+		Name:           "Name",
+		Surname:        "Surname",
+		Address:        "Address",
+		PassportSerie:  "0000",
+		PassportNumber: "123456",
+	})
+	if err != nil {
+		println(err.Error())
+	}
+	fmt.Println(smth)
+	smth2, err2 := profileStore.GetMany(context.Background(), 1, 10, models.ProfileFilter{
+		Name:       []string{"name1", "name2"},
+		Surname:    []string{"surname1", "surname2"},
+		Patronymic: []string{"patr1", "patr2"},
+		Address:    []string{"addr1", "addr2"},
+	})
+	if err2 != nil {
+		fmt.Println(err2.Error())
+	}
+	fmt.Println(smth2)
+	peopleInfoService := peopleinfo.NewService(log)
+	profileService := profileService.NewService(profileStore, peopleInfoService, log)
 	controllers = []Controller{
 		profile.NewController(profileService, log),
 	}

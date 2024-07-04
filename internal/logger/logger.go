@@ -12,12 +12,24 @@ type Logger interface {
 	Debug(v ...any)
 	Error(v ...any)
 	Info(v ...any)
+	Printf(format string, v ...any)
+	Verbose() bool
+}
+
+type logrusLogger struct {
+	logrus.Logger
+	verbose bool
+}
+
+// Need for inserting into pgx
+func (l *logrusLogger) Verbose() bool {
+	return l.verbose
 }
 
 var logger Logger
 
 func init() {
-	log := logrus.New()
+	log := &logrusLogger{}
 	configure(log)
 	logger = log
 }
@@ -26,7 +38,7 @@ func Get() Logger {
 	return logger
 }
 
-func configure(log *logrus.Logger) {
+func configure(log *logrusLogger) {
 	log.SetFormatter(&logrus.JSONFormatter{})
 	writers := []io.Writer{os.Stdout}
 	if config.App.LogsPath != "" {
@@ -38,4 +50,7 @@ func configure(log *logrus.Logger) {
 		}
 	}
 	log.SetOutput(io.MultiWriter(writers...))
+	log.Info("some info logs")
+	log.Logger.Info("some inner info logs")
+	log.verbose = true
 }

@@ -1,8 +1,10 @@
 package models
 
 type Profile struct {
-	PassCode   string
-	PassNumber string
-	Name       string
-	//TODO: дописать
+	PassportSerie  string `json:"passportSerie"`
+	PassportNumber string `json:"passportNumber"`
+	Name           string `json:"name"`
+	Surname        string `json:"surname"`
+	Patronymic     string `json:"patronymic,omitempty"`
+	Address        string `json:"address"`
 }

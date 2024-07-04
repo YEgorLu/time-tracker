@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 	"strconv"
 
 	"github.com/YEgorLu/time-tracker/internal/config"
@@ -25,7 +26,11 @@ type fileParamBinding struct {
 var f fileParamBinding
 
 var filePathParams = []fileParamBinding{
-	fileParamBinding{paramBinding: paramBinding[*string]{"LOGS_PATH", &config.App.LogsPath}, ext: ".json"},
+	{paramBinding: paramBinding[*string]{"LOGS_PATH", &config.App.LogsPath}, ext: ".json"},
+}
+
+var folderPathParams = []paramBinding[*string]{
+	{"MIGRATIONS_FOLDER", &config.DB.MigrationsFolderPath},
 }
 
 var stringsParams = []paramBinding[*string]{
@@ -51,6 +56,7 @@ func init() {
 func parseFlags() {
 	flag.Func("config-path", "Path to .env file", checkFile(&config.App.EnvPath, ".env"))
 	flag.Func("log-path", "Path to .json file for logs", checkFile(&config.App.LogsPath, ".json"))
+	flag.Func("migrations-path", "Absolute or relative to project root path to migratinos folder", checkFolder(&config.DB.MigrationsFolderPath, true))
 
 	flag.StringVar(&config.App.Port, "port", "8080", "Port to run server")
 	flag.StringVar(&config.DB.Provider, "db-provider", "postgres", "Database provider name")
@@ -67,6 +73,12 @@ func parseEnvironment() {
 	for _, v := range filePathParams {
 		if envValue := os.Getenv(v.from); envValue != "" {
 			checkFile(v.to, v.ext)(envValue)
+		}
+	}
+
+	for _, v := range folderPathParams {
+		if envValue := os.Getenv(v.from); envValue != "" {
+			checkFolder(v.to, true)(envValue)
 		}
 	}
 
@@ -87,9 +99,25 @@ func parseFileConfig() {
 	if config.App.EnvPath == "" {
 		return
 	}
-	envMap, err := godotenv.Read(config.App.EnvPath)
+	curDir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	envMap, err := godotenv.Read(path.Join(curDir, config.App.EnvPath))
 	if err != nil {
 		panic(errors.Join(errors.New("invalid .env path provided"), err))
+	}
+
+	for _, v := range filePathParams {
+		if envValue, ok := envMap[v.from]; ok {
+			checkFile(v.to, v.ext)(envValue)
+		}
+	}
+
+	for _, v := range folderPathParams {
+		if envValue, ok := envMap[v.from]; ok {
+			checkFolder(v.to, true)(envValue)
+		}
 	}
 
 	for _, v := range stringsParams {
@@ -133,10 +161,41 @@ func checkFile(toPastePath *string, ext string) func(string) error {
 	}
 }
 
+func checkFolder(toPastePath *string, isAbsolute bool) func(string) error {
+	return func(s string) error {
+		if path.IsAbs(s) != isAbsolute {
+			return newPathError(s, isAbsolute)
+		}
+
+		v, err := os.Stat(s)
+		if err != nil {
+			return err
+		}
+		if !v.IsDir() {
+			return newNotFolderError(s)
+		}
+
+		*toPastePath = s
+		return nil
+	}
+}
+
 func newExtensionError(path string, wantExt string) error {
 	return errors.New(fmt.Sprintf("invalid file extension, want: %s, path: %s", wantExt, path))
 }
 
 func newNotWritableError(path string) error {
 	return errors.New(fmt.Sprintf("file not writable, path: %s", path))
+}
+
+func newPathError(s string, isAbsolute bool) error {
+	absoluteTxt := "absolute"
+	if !isAbsolute {
+		absoluteTxt = "relative"
+	}
+	return errors.New(fmt.Sprintf("path %s is not %s", s, absoluteTxt))
+}
+
+func newNotFolderError(s string) error {
+	return errors.New(fmt.Sprintf("%s is not a folder", s))
 }
