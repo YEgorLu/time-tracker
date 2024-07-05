@@ -1,12 +1,12 @@
 package server
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"strings"
 
 	"github.com/YEgorLu/time-tracker/internal/controllers"
+	"github.com/YEgorLu/time-tracker/internal/logger"
 	"github.com/YEgorLu/time-tracker/internal/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -14,10 +14,12 @@ import (
 type Server struct {
 	http.Server
 	router *http.ServeMux
+	log    logger.Logger
 }
 
 type ServerConfig struct {
 	Port string
+	Log  logger.Logger
 }
 
 var defaultConfig = ServerConfig{
@@ -26,11 +28,11 @@ var defaultConfig = ServerConfig{
 
 func NewServer(conf *ServerConfig) *Server {
 	conf = parseConfig(conf)
-	fmt.Println(conf)
 	server := &Server{
 		Server: http.Server{
 			Addr: conf.Port,
 		},
+		log: conf.Log,
 	}
 	return server
 }
@@ -38,6 +40,7 @@ func NewServer(conf *ServerConfig) *Server {
 func (s *Server) Configure() *Server {
 	router, err := controllers.GetRoutes()
 	if err != nil {
+		s.log.Error(err)
 		panic(err)
 	}
 	s.router = router
@@ -46,6 +49,7 @@ func (s *Server) Configure() *Server {
 
 func (s *Server) WithSwagger() *Server {
 	if s.router == nil {
+		s.log.Error("WithSwagger must be placed after Configure()")
 		panic("WithSwagger must be placed after Configure()")
 	}
 	s.router.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost"+s.Addr+"/swagger/doc.json")))
@@ -56,10 +60,11 @@ func (s *Server) Run() error {
 	s.Handler = middleware.Logger(nil)(s.router)
 	l, err := net.Listen("tcp", s.Addr)
 	if err != nil {
+		s.log.Error(err)
 		return err
 	}
 
-	println("server is listening on ", s.Addr)
+	s.log.Info("server is listening on ", s.Addr)
 
 	return s.Server.Serve(l)
 }

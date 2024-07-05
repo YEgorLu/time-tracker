@@ -17,7 +17,7 @@ type Logger interface {
 }
 
 type logrusLogger struct {
-	logrus.Logger
+	*logrus.Logger
 	verbose bool
 }
 
@@ -29,7 +29,9 @@ func (l *logrusLogger) Verbose() bool {
 var logger Logger
 
 func init() {
-	log := &logrusLogger{}
+	log := &logrusLogger{
+		Logger: logrus.New(),
+	}
 	configure(log)
 	logger = log
 }

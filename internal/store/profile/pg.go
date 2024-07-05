@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -72,7 +71,6 @@ func (p *pgProfileStore) Delete(ctx context.Context, id uuid.UUID) error {
 
 // GetMany implements ProfileStore.
 func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter models.ProfileFilter) ([]models.Profile, int, error) {
-	fmt.Println("page size ", page, size)
 	type queryResult[T any] struct {
 		result T
 		err    error
@@ -124,8 +122,7 @@ func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter mod
 		offset := (page - 1) * size
 		args = append(args, offset)
 		query = append(query, `LIMIT $`+strconv.Itoa(limitIndex)+` OFFSET $`+strconv.Itoa(offsetIndex))
-		fmt.Println(strings.Join(query, " "))
-		fmt.Println(args)
+
 		rows, err := p.conn.QueryContext(ctx, strings.Join(query, " "), args...)
 		if err != nil {
 			profilesCh <- queryResult[[]models.Profile]{result: []models.Profile{}, err: err}

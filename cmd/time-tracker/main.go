@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
-
 	_ "github.com/YEgorLu/time-tracker/api/rest"
 	"github.com/YEgorLu/time-tracker/internal/config"
 	"github.com/YEgorLu/time-tracker/internal/db"
+	"github.com/YEgorLu/time-tracker/internal/logger"
 	"github.com/YEgorLu/time-tracker/internal/server"
 )
 
@@ -19,8 +18,10 @@ import (
 
 // @BasePath /
 func main() {
+	l := logger.Get()
 	serverConfig := server.ServerConfig{
 		Port: config.App.Port,
+		Log:  l,
 	}
 	defer db.CloseAll()
 	err := server.
@@ -29,7 +30,7 @@ func main() {
 		WithSwagger().
 		Run()
 	if err != nil {
-		fmt.Print(err)
+		l.Error(err)
 	}
-	fmt.Println("Program closed")
+	l.Info("Program closed")
 }
