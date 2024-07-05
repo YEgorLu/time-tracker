@@ -6,13 +6,13 @@ import (
 )
 
 func (c *ProfileController) GetOne(w http.ResponseWriter, r *http.Request) {
-	body, err := parsePassport(r)
+	id, err := parseUUID(r.PathValue("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	profile, err := c.ps.GetOne(r.Context(), body.PassportSerie, body.PassportNumber)
+	profile, err := c.ps.GetOne(r.Context(), id)
 	if err != nil {
 		//todo: добавить ошибку отсутствия записи
 		w.WriteHeader(http.StatusInternalServerError)

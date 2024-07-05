@@ -8,6 +8,7 @@ import (
 	"github.com/YEgorLu/time-tracker/internal/service/profile/converters"
 	"github.com/YEgorLu/time-tracker/internal/service/profile/models"
 	store "github.com/YEgorLu/time-tracker/internal/store/profile"
+	"github.com/google/uuid"
 )
 
 var _ ProfileService = &localProfileService{}
@@ -44,8 +45,8 @@ func (p *localProfileService) Create(ctx context.Context, passportSerie, passpor
 }
 
 // Delete implements ProfileService.
-func (p *localProfileService) Delete(ctx context.Context, passportSerie, passportNumber string) error {
-	return p.store.Delete(ctx, passportSerie, passportNumber)
+func (p *localProfileService) Delete(ctx context.Context, id uuid.UUID) error {
+	return p.store.Delete(ctx, id)
 }
 
 // GetMany implements ProfileService.
@@ -58,8 +59,8 @@ func (p *localProfileService) GetMany(ctx context.Context, page, size int, filte
 }
 
 // GetOne implements ProfileService.
-func (p *localProfileService) GetOne(ctx context.Context, passportSerie, passportNumber string) (models.Profile, error) {
-	dbProfile, err := p.store.GetOne(ctx, passportSerie, passportNumber)
+func (p *localProfileService) GetOne(ctx context.Context, id uuid.UUID) (models.Profile, error) {
+	dbProfile, err := p.store.GetOne(ctx, id)
 	if err != nil {
 		p.log.Error(err)
 		return models.Profile{}, err

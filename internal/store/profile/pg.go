@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/YEgorLu/time-tracker/internal/store/profile/models"
+	"github.com/google/uuid"
 )
 
 var _ ProfileStore = &pgProfileStore{}
@@ -34,13 +35,14 @@ func (p *pgProfileStore) Create(ctx context.Context, profile models.Profile) (mo
 	row := tx.QueryRowContext(ctx, `INSERT INTO public.profile(
 	pass_serie, pass_number, name, surname, patronymic, address)
 	VALUES ($1, $2, $3, $4, $5, $6)
-	returning pass_serie, pass_number, name, surname, patronymic, address;`,
+	returning id, pass_serie, pass_number, name, surname, patronymic, address;`,
 		profile.PassportSerie, profile.PassportNumber, profile.Name, profile.Surname, profile.Patronymic, profile.Address)
 	if err = row.Err(); err != nil {
 		return models.Profile{}, err
 	}
 	var createdProfile models.Profile
 	if err := row.Scan(
+		&createdProfile.Id,
 		&createdProfile.PassportSerie,
 		&createdProfile.PassportNumber,
 		&createdProfile.Name,
@@ -54,14 +56,14 @@ func (p *pgProfileStore) Create(ctx context.Context, profile models.Profile) (mo
 }
 
 // Delete implements ProfileStore.
-func (p *pgProfileStore) Delete(ctx context.Context, passportSerie, passportNumber string) error {
+func (p *pgProfileStore) Delete(ctx context.Context, id uuid.UUID) error {
 	tx, err := p.conn.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 	_, err = tx.ExecContext(ctx, `DELETE FROM public.profile
-	WHERE pass_serie = $1 AND pass_number = $2;`, passportSerie, passportNumber)
+	WHERE id = $1;`, id)
 	if err != nil {
 		return err
 	}
@@ -84,9 +86,8 @@ func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter mod
 		countRowsCh <- queryResult[int]{count, err}
 	}()
 	go func() {
-		query := []string{`SELECT pass_serie, pass_number, name, surname, patronymic, address
-			FROM public.profile
-			WHERE `}
+		query := []string{`SELECT id, pass_serie, pass_number, name, surname, patronymic, address
+			FROM public.profile`}
 		var searchParams []string
 		args := make([]any, 0, len(filter.Name)+len(filter.Surname)+len(filter.Patronymic)+len(filter.Address))
 		parameterTypes := [...]struct {
@@ -111,7 +112,10 @@ func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter mod
 				searchParams = append(searchParams, parameterType.argName+` IN (`+strings.Join(maskSl, ", ")+`) `)
 			}
 		}
-		query = append(query, strings.Join(searchParams, " AND "))
+		if len(searchParams) > 0 {
+			query = append(query, " WHERE ")
+			query = append(query, strings.Join(searchParams, " AND "))
+		}
 		paramIndex++
 		limitIndex := paramIndex
 		args = append(args, size)
@@ -142,6 +146,7 @@ func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter mod
 
 			var profile models.Profile
 			if err = rows.Scan(
+				&profile.Id,
 				&profile.PassportSerie,
 				&profile.PassportNumber,
 				&profile.Name,
@@ -185,15 +190,16 @@ func (p *pgProfileStore) GetMany(ctx context.Context, page, size int, filter mod
 }
 
 // GetOne implements ProfileStore.
-func (p *pgProfileStore) GetOne(ctx context.Context, passportSerie, passportNumber string) (models.Profile, error) {
-	row := p.conn.QueryRowContext(ctx, `SELECT pass_serie, pass_number, name, surname, patronymic, address
+func (p *pgProfileStore) GetOne(ctx context.Context, id uuid.UUID) (models.Profile, error) {
+	row := p.conn.QueryRowContext(ctx, `SELECT id, pass_serie, pass_number, name, surname, patronymic, address
 	FROM public.profile;
-	WHERE pass_serie = $1 AND pass_number = $2`, passportSerie, passportNumber)
+	WHERE id = $1`, id)
 	if err := row.Err(); err != nil {
 		return models.Profile{}, err
 	}
 	var profile models.Profile
 	err := row.Scan(
+		&profile.Id,
 		&profile.PassportSerie,
 		&profile.PassportNumber,
 		&profile.Name,
@@ -212,10 +218,9 @@ func (p *pgProfileStore) Update(ctx context.Context, profile models.Profile) err
 	}
 	defer tx.Rollback()
 	tx.ExecContext(ctx, `UPDATE public.profile
-	SET name=$3, surname=$4, patronymic=$5, address=$6
-	WHERE pass_serie=$1 AND pass_number=$2;`,
-		profile.PassportSerie,
-		profile.PassportNumber,
+	SET name=$2, surname=$3, patronymic=$4, address=$5
+	WHERE id = $1;`,
+		profile.Id,
 		profile.Name,
 		profile.Surname,
 		profile.Patronymic,

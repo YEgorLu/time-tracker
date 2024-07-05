@@ -45,7 +45,7 @@ func (p PostgresProvider) Bootstrap(conn *sql.DB, migrationsFolder string) error
 		println(2, err.Error())
 		return err
 	}
-	if err := m.Up(); err != nil {
+	if err := m.Steps(1); err != nil {
 		println(3, err.Error())
 		return err
 	}

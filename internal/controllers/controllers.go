@@ -37,22 +37,28 @@ func initControllers() {
 	log := logger.Get()
 	db := db.GetConnection(log)
 	profileStore := profileStore.NewStore(db)
-	smth, err := profileStore.Create(context.Background(), models.Profile{
-		Name:           "Name",
-		Surname:        "Surname",
-		Address:        "Address",
-		PassportSerie:  "0000",
-		PassportNumber: "123456",
-	})
-	if err != nil {
-		println(err.Error())
-	}
-	fmt.Println(smth)
-	smth2, count, err2 := profileStore.GetMany(context.Background(), 1, 2, models.ProfileFilter{
-		Name:       []string{"name1", "name2", "name3"},
-		Surname:    []string{"surname1", "surname2", "surname3"},
-		Patronymic: []string{"patr1", "patr2", "patr3"},
-		Address:    []string{"addr1", "addr2", "addr3"},
+	// for i := 0; i < 10; i++ {
+	// 	istr := strconv.Itoa(i)
+	// 	serie := util.PadPrefix(istr, 4, "0")
+	// 	number := "12345" + istr
+	// 	dbprof := models.Profile{
+	// 		Name:           "Name" + istr,
+	// 		Surname:        "Surname" + istr,
+	// 		Address:        "Address" + istr,
+	// 		PassportSerie:  serie,
+	// 		PassportNumber: number,
+	// 	}
+	// 	smth, err := profileStore.Create(context.Background(), dbprof)
+	// 	if err != nil {
+	// 		println(err.Error())
+	// 	}
+	// 	fmt.Println(smth)
+	// }
+
+	smth2, count, err2 := profileStore.GetMany(context.Background(), 1, 20, models.ProfileFilter{
+		Name:    []string{"Name1", "Name2", "Name3"},
+		Surname: []string{"Surname1", "Surname2", "Surname3"},
+		Address: []string{"Address1", "Address2", "Address3"},
 	})
 	if err2 != nil {
 		fmt.Println(err2.Error())
