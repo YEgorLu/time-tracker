@@ -1,0 +1,77 @@
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 6.4225ms, ran 14.9377ms)\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 29.2515ms, ran 20.9479ms)\n","time":"2024-07-06T04:16:45+05:00"}
+{"level":"debug","msg":"path POST /profile","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:16:45+05:00"}
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 7.2689ms, ran 15.9421ms)\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 31.3884ms, ran 20.0632ms)\n","time":"2024-07-06T04:18:55+05:00"}
+{"level":"debug","msg":"path POST /profile","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:18:55+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:18:58+05:00"}
+{"level":"info","msg":"response0GET/profile/list 0","time":"2024-07-06T04:18:58+05:00"}
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 7.3893ms, ran 14.9893ms)\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 30.3784ms, ran 24.0158ms)\n","time":"2024-07-06T04:19:43+05:00"}
+{"level":"debug","msg":"path POST /profile","time":"2024-07-06T04:19:44+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:19:44+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:19:59+05:00"}
+{"level":"info","msg":"response 0 GET/profile/list 0","time":"2024-07-06T04:19:59+05:00"}
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:21:06+05:00"}
+{"level":"debug","msg":"connecting to postgrs url: postgres://postgres:16ed2ad3b@localhost:5432/TimeTracker?sslmode=disable","time":"2024-07-06T04:21:06+05:00"}
+{"level":"debug","msg":"using folder for migrations: ./migrations","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 8.2048ms, ran 16.7171ms)\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 34.5787ms, ran 23.7422ms)\n","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:21:06+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:17+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:18+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:18+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:18+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:23+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:53+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:53+05:00"}
+{"level":"info","msg":"requestGET/profile/list","time":"2024-07-06T04:21:53+05:00"}
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:22:25+05:00"}
+{"level":"debug","msg":"connecting to postgrs url: postgres://postgres:16ed2ad3b@localhost:5432/TimeTracker?sslmode=disable","time":"2024-07-06T04:22:25+05:00"}
+{"level":"debug","msg":"using folder for migrations: ./migrations","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 6.7668ms, ran 15.3901ms)\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 29.9176ms, ran 22.2038ms)\n","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:22:25+05:00"}
+{"level":"info","msg":"request GET/profile/list","time":"2024-07-06T04:22:53+05:00"}
+{"level":"info","msg":"response  0 GET/profile/list 0","time":"2024-07-06T04:22:53+05:00"}
+{"level":"info","msg":"some info logs","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"some inner info logs","time":"2024-07-06T04:30:53+05:00"}
+{"level":"debug","msg":"connecting to postgrs url: postgres://postgres:16ed2ad3b@localhost:5432/TimeTracker?sslmode=disable","time":"2024-07-06T04:30:53+05:00"}
+{"level":"debug","msg":"using folder for migrations: ./migrations","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Start buffering 1/u CREATE_PROFILE\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Start buffering 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Read and execute 1/u CREATE_PROFILE\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Finished 1/u CREATE_PROFILE (read 7.2981ms, ran 17.689ms)\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Read and execute 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"Finished 2/u CREATE_TASKS_AND_WORK_TIMES_AND_TIMERS (read 33.4943ms, ran 23.7211ms)\n","time":"2024-07-06T04:30:53+05:00"}
+{"level":"info","msg":"server is listening on :8080","time":"2024-07-06T04:30:53+05:00"}

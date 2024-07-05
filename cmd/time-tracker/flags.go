@@ -11,6 +11,7 @@ import (
 	"github.com/YEgorLu/time-tracker/internal/config"
 	"github.com/YEgorLu/time-tracker/internal/util"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 type paramBinding[T any] struct {
@@ -65,6 +66,16 @@ func parseFlags() {
 	flag.StringVar(&config.DB.User, "db-user", "admin", "Username of database user")
 	flag.StringVar(&config.DB.Password, "db-password", "admin", "Password of database user")
 	flag.BoolVar(&config.DB.RecreateOnStart, "db-recreate", false, "Delete database and recreate from migrations")
+
+	flag.Func("log-level", "log level for logger: 'panic', 'fatal', 'error', 'warn' | 'warning', 'info', 'debug', 'trace'", func(s string) error {
+		logLevel, err := logrus.ParseLevel(s)
+		if err != nil {
+			return err
+		}
+		config.App.LogLevel = logLevel
+		return nil
+	})
+
 	flag.Parse()
 }
 
@@ -91,6 +102,10 @@ func parseEnvironment() {
 		if envValue, err := strconv.ParseBool(os.Getenv(v.from)); err == nil {
 			*v.to = envValue
 		}
+	}
+
+	if logLevel, err := logrus.ParseLevel(os.Getenv("LOG_LEVEL")); err == nil {
+		config.App.LogLevel = logLevel
 	}
 }
 
@@ -132,6 +147,12 @@ func parseFileConfig() {
 			} else {
 				*v.to = envBoolValue
 			}
+		}
+	}
+
+	if envValue, ok := envMap["LOG_LEVEL"]; ok {
+		if logLevel, err := logrus.ParseLevel(envValue); err == nil {
+			config.App.LogLevel = logLevel
 		}
 	}
 }

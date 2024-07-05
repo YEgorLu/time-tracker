@@ -24,29 +24,26 @@ type PostgresProvider struct {
 }
 
 func (p PostgresProvider) GetConnection() (*sql.DB, error) {
-	println("url: ", p.Url())
+	p.log.Debug("connecting to postgrs url: ", p.Url())
 	return sql.Open("pgx", p.Url())
 }
 
 func (p PostgresProvider) Bootstrap(conn *sql.DB, migrationsFolder string) error {
 	pathPrefix := "file://"
-	println(migrationsFolder)
+	p.log.Debug("using folder for migrations: ", migrationsFolder)
 	if path.IsAbs(migrationsFolder) {
 		pathPrefix = "file:///"
 	}
 
 	m, err := migrate.New(pathPrefix+migrationsFolder, p.Url())
 	if err != nil {
-		println(1, err.Error())
 		return err
 	}
 	m.Log = p.log
 	if err := m.Drop(); err != nil {
-		println(2, err.Error())
 		return err
 	}
 	if err := m.Up(); err != nil {
-		println(3, err.Error())
 		return err
 	}
 	return nil

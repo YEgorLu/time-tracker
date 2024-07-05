@@ -57,7 +57,7 @@ func (s *Server) WithSwagger() *Server {
 }
 
 func (s *Server) Run() error {
-	s.Handler = middleware.Logger(nil)(s.router)
+	s.Handler = middleware.Logger(s.log)(s.router)
 	l, err := net.Listen("tcp", s.Addr)
 	if err != nil {
 		s.log.Error(err)

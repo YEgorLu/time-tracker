@@ -1,13 +1,17 @@
 package config
 
+import "github.com/sirupsen/logrus"
+
 var App = struct {
 	Port     string
 	EnvPath  string
 	LogsPath string
+	LogLevel logrus.Level
 }{
 	Port:     "8080",
 	EnvPath:  "../.env",
 	LogsPath: "../logs.json",
+	LogLevel: logrus.ErrorLevel,
 }
 
 var DB = struct {

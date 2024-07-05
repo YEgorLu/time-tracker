@@ -3,6 +3,7 @@ package logger
 import (
 	"io"
 	"os"
+	"sync"
 
 	"github.com/YEgorLu/time-tracker/internal/config"
 	"github.com/sirupsen/logrus"
@@ -26,22 +27,25 @@ func (l *logrusLogger) Verbose() bool {
 	return l.verbose
 }
 
-var logger Logger
-
-func init() {
-	log := &logrusLogger{
-		Logger: logrus.New(),
-	}
-	configure(log)
-	logger = log
-}
+var (
+	logger   Logger
+	initOnce sync.Once
+)
 
 func Get() Logger {
+	initOnce.Do(func() {
+		log := &logrusLogger{
+			Logger: logrus.New(),
+		}
+		configure(log)
+		logger = log
+	})
 	return logger
 }
 
 func configure(log *logrusLogger) {
 	log.SetFormatter(&logrus.JSONFormatter{})
+	log.SetLevel(config.App.LogLevel)
 	writers := []io.Writer{os.Stdout}
 	if config.App.LogsPath != "" {
 		logsFile, err := os.OpenFile(config.App.LogsPath, os.O_WRONLY|os.O_APPEND, 0444)
