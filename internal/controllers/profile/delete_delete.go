@@ -2,10 +2,12 @@ package profile
 
 import (
 	"net/http"
+
+	"github.com/YEgorLu/time-tracker/internal/util"
 )
 
 func (c *ProfileController) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := parseUUID(r.PathValue("id"))
+	id, err := util.ParseUUID(r.PathValue("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

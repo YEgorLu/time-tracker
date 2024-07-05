@@ -2,11 +2,9 @@ package profile
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/YEgorLu/time-tracker/internal/controllers/profile/models"
-	"github.com/google/uuid"
 )
 
 func parsePassport(r *http.Request) (models.GetProfileOneReq, error) {
@@ -23,15 +21,4 @@ func getNonEmptyStrings(s []string) []string {
 		}
 	}
 	return notEmpty
-}
-
-func parseUUID(idStr string) (uuid.UUID, error) {
-	if idStr == "" {
-		return uuid.Nil, errors.New("empty id")
-	}
-	id, err := uuid.Parse(idStr)
-	if err != nil {
-		return uuid.Nil, err
-	}
-	return id, nil
 }
