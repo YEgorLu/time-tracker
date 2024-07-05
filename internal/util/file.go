@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -11,6 +12,7 @@ func FileExists(path string) (bool, error) {
 	if err == nil && !v.IsDir() {
 		return true, nil
 	}
+	fmt.Println(err.Error())
 	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
 	}

@@ -101,10 +101,12 @@ func parseFileConfig() {
 	}
 	curDir, err := os.Getwd()
 	if err != nil {
+		fmt.Println("in parse config")
 		panic(err)
 	}
 	envMap, err := godotenv.Read(path.Join(curDir, config.App.EnvPath))
 	if err != nil {
+		fmt.Println("in godorenv read")
 		panic(errors.Join(errors.New("invalid .env path provided"), err))
 	}
 
@@ -141,6 +143,7 @@ func checkFile(toPastePath *string, ext string) func(string) error {
 	return func(s string) error {
 		exists, err := util.FileExists(s)
 		if err != nil {
+			fmt.Println(err.Error())
 			panic(err)
 		}
 		if !exists {

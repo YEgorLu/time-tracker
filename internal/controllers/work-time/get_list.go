@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/YEgorLu/time-tracker/internal/controllers/work-time/converters"
+	"github.com/YEgorLu/time-tracker/internal/controllers/work-time/models"
 	"github.com/google/uuid"
 )
 
@@ -19,6 +20,16 @@ var (
 	queryParams = [...]string{queryUserId, queryTimestampStart, queryTimestampEnd}
 )
 
+type swagListReq models.TaskWorktime
+
+// List godoc
+// @Summary Returns tasks with their overall work times sorted by work time descending
+// @Produce json
+// @Param userId query string true "User ID"
+// @Param timestampStart query string true "Timestamp Start"
+// @Param timestampEnd query string true "Timestamp End"
+// @Success 200 {array} swagListReq
+// @Router /work-time/list [get]
 func (c *workTimeController) List(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	for _, v := range queryParams {

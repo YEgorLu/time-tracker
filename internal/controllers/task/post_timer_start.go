@@ -7,6 +7,16 @@ import (
 	"github.com/YEgorLu/time-tracker/internal/controllers/task/models"
 )
 
+type startRes models.TimerStartRes
+type startReq models.TimerStartReq
+
+// TimerStart godoc
+// @Summary Starts timer on given task
+// @Produce json
+// @Param taskId body string true "Task ID"
+// @Param userId body string true "User ID"
+// @Success 200 {object} startRes
+// @Router /timer/start [post]
 func (c *taskController) timerStart(w http.ResponseWriter, r *http.Request) {
 	var body models.TimerStartReq
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

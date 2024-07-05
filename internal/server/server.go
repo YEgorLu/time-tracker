@@ -7,10 +7,13 @@ import (
 	"strings"
 
 	"github.com/YEgorLu/time-tracker/internal/controllers"
+	"github.com/YEgorLu/time-tracker/internal/middleware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type Server struct {
 	http.Server
+	router *http.ServeMux
 }
 
 type ServerConfig struct {
@@ -37,11 +40,20 @@ func (s *Server) Configure() *Server {
 	if err != nil {
 		panic(err)
 	}
-	s.Handler = router
+	s.router = router
+	return s
+}
+
+func (s *Server) WithSwagger() *Server {
+	if s.router == nil {
+		panic("WithSwagger must be placed after Configure()")
+	}
+	s.router.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost"+s.Addr+"/swagger/doc.json")))
 	return s
 }
 
 func (s *Server) Run() error {
+	s.Handler = middleware.Logger(nil)(s.router)
 	l, err := net.Listen("tcp", s.Addr)
 	if err != nil {
 		return err

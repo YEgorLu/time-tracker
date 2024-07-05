@@ -9,6 +9,7 @@ import (
 
 	"github.com/YEgorLu/time-tracker/internal/controllers/profile"
 	"github.com/YEgorLu/time-tracker/internal/controllers/task"
+	worktiimeController "github.com/YEgorLu/time-tracker/internal/controllers/work-time"
 	"github.com/YEgorLu/time-tracker/internal/db"
 	"github.com/YEgorLu/time-tracker/internal/logger"
 	peopleinfo "github.com/YEgorLu/time-tracker/internal/service/peopleInfo"
@@ -37,6 +38,10 @@ func GetRoutes() (*http.ServeMux, error) {
 	for _, controller := range controllers {
 		controller.RegisterRoute(router)
 	}
+	//fmt.Printf("%p\n", router)
+	fmt.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+	router.HandleFunc("/app", func(w http.ResponseWriter, r *http.Request) {})
+	//baseRouter.Handle("/api", middleware.Logger(nil)(router))
 	return router, nil
 }
 
@@ -82,5 +87,6 @@ func initControllers() {
 	controllers = []Controller{
 		profile.NewController(profileService, log),
 		task.NewController(timerService, log),
+		worktiimeController.NewController(workTimeService, log),
 	}
 }

@@ -9,6 +9,19 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
+type asd models.GetProfileOneReq
+type listRes models.ListProfileRes
+
+// List Profiles godoc
+// @Summary Returns list of filtered profiles
+// @Produce json
+// @Param Name body []string false "Name"
+// @Param Surname body []string false "Surname"
+// @Param Patronymic body []string false "Patronymic"
+// @Param Address body []string false "Address"
+// @Param Passport body []asd false "Passport Data"
+// @Success 200 {object} listRes
+// @Router /profile/list [post]
 func (c *ProfileController) List(w http.ResponseWriter, r *http.Request) {
 	var body models.ListProfileRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

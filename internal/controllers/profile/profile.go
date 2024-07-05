@@ -21,7 +21,7 @@ func NewController(ps profile.ProfileService, log logger.Logger) *ProfileControl
 }
 
 func (c *ProfileController) RegisterRoute(router *http.ServeMux) {
-	p := util.Rpm("/profile")
+	p := util.Rpm("profile")
 	c.log.Debug("path ", p(http.MethodPost))
 	router.HandleFunc(p(http.MethodPost, "list"), c.List)
 	router.HandleFunc(p(http.MethodPost), c.Create)

@@ -1,0 +1,269 @@
+basePath: /
+definitions:
+  github_com_YEgorLu_time-tracker_internal_service_profile_models.Profile:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      passportNumber:
+        type: string
+      passportSerie:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  profile.asd:
+    properties:
+      passportNumber:
+        type: string
+      passportSerie:
+        type: string
+    type: object
+  profile.listRes:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_YEgorLu_time-tracker_internal_service_profile_models.Profile'
+        type: array
+      totalCount:
+        type: integer
+    type: object
+  task.s:
+    properties:
+      timerId:
+        type: string
+    type: object
+  task.startRes:
+    properties:
+      timerId:
+        type: string
+    type: object
+  worktime.swagListReq:
+    properties:
+      ms:
+        type: integer
+      taskId:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Swagger API for Time Tracker.
+  license:
+    name: MIT
+    url: https://github.com/MartinHeinz/go-project-blueprint/blob/master/LICENSE
+  termsOfService: http://swagger.io/terms/
+  title: Time Tracker Swagger API
+  version: "1.0"
+paths:
+  /profile:
+    post:
+      parameters:
+      - description: 0000 000000
+        in: body
+        name: PassportNumber
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Creates profile using given passport data
+    put:
+      parameters:
+      - description: Profile ID
+        in: body
+        name: Id
+        required: true
+        schema:
+          type: string
+      - description: Passport Serie
+        in: body
+        name: PassportSerie
+        required: true
+        schema:
+          type: string
+      - description: Passport Number
+        in: body
+        name: PassportNumber
+        required: true
+        schema:
+          type: string
+      - description: Name
+        in: body
+        name: Name
+        required: true
+        schema:
+          type: string
+      - description: Surname
+        in: body
+        name: Surname
+        required: true
+        schema:
+          type: string
+      - description: Patronymic
+        in: body
+        name: Patronymic
+        schema:
+          type: string
+      - description: Address
+        in: body
+        name: Address
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Updates all Profile fields
+  /profile/{id}:
+    delete:
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Deletes given profile
+    get:
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profile.listRes'
+      summary: Returns profile
+  /profile/list:
+    post:
+      parameters:
+      - description: Name
+        in: body
+        name: Name
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Surname
+        in: body
+        name: Surname
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Patronymic
+        in: body
+        name: Patronymic
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Address
+        in: body
+        name: Address
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Passport Data
+        in: body
+        name: Passport
+        schema:
+          items:
+            $ref: '#/definitions/profile.asd'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profile.listRes'
+      summary: Returns list of filtered profiles
+  /tasks/timer/{id}/stop:
+    get:
+      parameters:
+      - description: Timer Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/task.s'
+            type: array
+      summary: Stops timer and creates worktime on task
+  /timer/start:
+    post:
+      parameters:
+      - description: Task ID
+        in: body
+        name: taskId
+        required: true
+        schema:
+          type: string
+      - description: User ID
+        in: body
+        name: userId
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.startRes'
+      summary: Starts timer on given task
+  /work-time/list:
+    get:
+      parameters:
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Timestamp Start
+        in: query
+        name: timestampStart
+        required: true
+        type: string
+      - description: Timestamp End
+        in: query
+        name: timestampEnd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/worktime.swagListReq'
+            type: array
+      summary: Returns tasks with their overall work times sorted by work time descending
+swagger: "2.0"
